@@ -1,55 +1,40 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Todo List | Tasks to do and have done</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" type="text/css" media="screen" href="normalize.css" />
-    <link rel="stylesheet" type="text/css" href="fontello/css/fontello.css">
-    <link rel="stylesheet" type="text/css" media="screen" href="main.css" />
-    
-</head>
-<body>
-    <header>
-        <div id="page-title">
-            <h1>To do list</h1>
-        </div>
-        <div id="page-subtitle">
-            <p>Make a list of tasks to do and archive it.</p>
-        </div>
-    </header>
-    <nav>
-        <div id="time-buttons">
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Todo List | Tasks to do and have done</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" type="text/css" media="screen" href="normalize.css" />
+        <link rel="stylesheet" type="text/css" href="fontello/css/fontello.css">
+        <link rel="stylesheet" type="text/css" media="screen" href="main.css" />
+        <script src="localforage.js"></script>
+        
+    </head>
+    <body>
+        <header>
+            <div id="page-title">
+                <h1>To do list</h1>
+            </div>
+            <div id="page-subtitle">
+                <p>Make a list of tasks to do and archive it.</p>
+            </div>
+        </header>
+        <nav>
+            <div id="time-buttons">
+                
+                <button id="todo">To do</button>
+                <button id="doing">Doing</button>   
+                <button id="done">Done</button>
+                
+            </div>
+        </nav>
+        
+        <main id="main">
             
-            <button>To do</button>
-            <button>Doing</button>   
-            <button>Done</button>
-            
-        </div>
-    </nav>
-    
-    <main>
-        <section id="add-task-section">        
-            <textarea name="task-text" id="task-textarea" cols="30" rows="3"></textarea>
-            <button id="add-task-btn" class="round-button" onclick="addTask()">
-                    <span>&#43;</span>
-            </button>
-            
-        </section>
-        <ul id="list-of-tasks">
-                <p>bla bla
-                        <span><i class="icon-flag"></i></span>
-                </p>
-            
-            <i class="icon-ok-circled" ></i>
-            <i class="icon-pencil-squared"></i>
-            
-            
-        </ul>
-    </main>
-    <footer></footer>
-
-    <script src="todo.js"></script>
-</body>
+        </main>
+        <footer></footer>
+        <script src="todo.js"></script>
+        
+    </body>
 </html>

@@ -52,7 +52,6 @@ main {
 main ul {
     list-style-type: none;
     padding: 40px;
-    border: 1px solid black;
 }
 
 
@@ -63,11 +62,11 @@ main ul {
     height: 100px;
     margin-top: 50px;
     padding: 20px;
-    border: 1px solid red;
+    
 }
 
 
-#task-textarea {
+.task-textarea {
     margin-right: 20px;
     margin-left: 20px;
     font-size: 25px;
@@ -85,7 +84,8 @@ main ul {
     height: 90px;
     width: 90px;
     border-radius: 50%;
-    border: 1px solid red;
+    border: 0;
+    
   }
 
 .round-button:focus {
