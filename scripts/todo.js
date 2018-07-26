@@ -163,7 +163,7 @@ doneBtn.addEventListener("click", function() {
 
 ////////////////////////////////////////////////////////
 (function(){
-displayPage(todoUrl);
+  displayPage(todoUrl);
 })();
 //doneBtn.addEventListener("click", displayPage(doneUrl));
 // Dodawanie zadania do strony
