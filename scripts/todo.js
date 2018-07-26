@@ -15,7 +15,7 @@ var uniqueId = function() {
 function Task(id, text = "Task", links = [], images = [], date = new Date(), progressDate = new Date()) {
     this.id = id;
     this.state = "todo";
-    
+
     this.text = text;
     this.links = links;
     this.images = images;
@@ -23,7 +23,7 @@ function Task(id, text = "Task", links = [], images = [], date = new Date(), pro
     this.date = date;
     this.startDay = this.date.today();
     this.startHour = this.date.timeNow();
-    
+
     this.progressDate = progressDate;
     this.progressStartDay = this.progressDate.today();
     this.progressStartHour = this.progressDate.timeNow();
@@ -54,7 +54,7 @@ let get = (url) => {
       // Do the usual XHR stuff
       var xhr = new XMLHttpRequest();
       xhr.open('GET', url);
-  
+
       xhr.onload = function() {
         // This is called even on 404 etc
         // so check the status
@@ -68,12 +68,12 @@ let get = (url) => {
           reject(Error(xhr.statusText));
         }
       };
-  
+
       // Handle network errors
       xhr.onerror = function() {
         reject(Error("Network Error"));
       };
-  
+
       // Make the request
       xhr.send();
     });
@@ -87,29 +87,29 @@ let displayPage = (url) => {
         let len = 0;
 
         todoStore.length().then(function(numberOfKeys){
-            len = numberOfKeys;   
+            len = numberOfKeys;
         }).catch(function(err) {
             console.log(err);
         });
-        
+
         todoStore.iterate(function(task, key, iterationNumber) {
             //console.log(typeof task);
             //let t = new Task(task.id, task.text, task.links, task.images);
             arr.push(task);
             if(iterationNumber > len - 1){
                 console.log(arr);
-                return arr;                
-            }    
+                return arr;
+            }
         }).then(function(arrTask){
             if(arrTask.length > 0) {
                 listOfAllTasks = arrTask;
                 listOfAllTasks = _.sortBy(listOfAllTasks, 'id');
                 lastTask = _.last(listOfAllTasks);
                 currentId = parseInt(lastTask.id) + 1;
-                
+
                 // W zaleznosci od wybranego url dostosuj wyswietlane zadania
                 if(url === todoUrl) {
-                    listOfAllTasks = _.filter(listOfAllTasks, (task) => task.state === "todo");     
+                    listOfAllTasks = _.filter(listOfAllTasks, (task) => task.state === "todo");
                 //appendAllTasks(listOfAllTasks);
                     appendAllTasks(listOfAllTasks);
                 } else if(url === doingUrl) {
@@ -119,17 +119,17 @@ let displayPage = (url) => {
                     listOfAllTasks = _.filter(listOfAllTasks, (task) => task.state === "have done");
                     appendAllTasks(listOfAllTasks);
                 }
-                
+
             } else {
                 currentId = 1;
             }
         }).catch(function(err) {
             console.log(err);
         });
-        
+
     }).catch((error) => {
         console.error("Failed!", error);
-    });  
+    });
 }
 //console.log(todoTasks);
 /////////////////////////////////////////////////
@@ -137,9 +137,9 @@ let displayPage = (url) => {
 let todoBtn = document.getElementById("todo");
 let doingBtn = document.getElementById("doing");
 let doneBtn = document.getElementById("done");
-let todoUrl = "http://localhost/Local-To-do-list/todo.html";
-let doingUrl = "http://localhost/Local-To-do-list/doing.html";
-let doneUrl = "http://localhost/Local-To-do-list/done.html";
+let todoUrl = "https://frown00.github.io/Local-To-do-list/todo.html";
+let doingUrl = "https://frown00.github.io/Local-To-do-list/doing.html";
+let doneUrl = "https://frown00.github.io/Local-To-do-list/done.html";
 
 
 let addTaskBtn = document.getElementById("add-task-btn");
@@ -151,9 +151,9 @@ let removeBtn = document.getElementsByClassName("icon-trash");
 
 todoBtn.addEventListener("click", () => {
     displayPage(todoUrl);
-    appendAllTasks(listOfAllTasks);   
+    appendAllTasks(listOfAllTasks);
 });
-doingBtn.addEventListener("click", () => { 
+doingBtn.addEventListener("click", () => {
     displayPage(doingUrl);
 });
 doneBtn.addEventListener("click", function() {
@@ -163,7 +163,7 @@ doneBtn.addEventListener("click", function() {
 
 ////////////////////////////////////////////////////////
 (function(){
-displayPage(todoUrl);    
+displayPage(todoUrl);
 })();
 //doneBtn.addEventListener("click", displayPage(doneUrl));
 // Dodawanie zadania do strony
@@ -178,7 +178,7 @@ let appendAllTasks = (listTasks) => {
 
 let addTask = function() {
     text = taskTextarea[0].value;
-    
+
     links = [];
     isText = text.replace(/\s/g, "").length;      // Sprawdzenie czy tekst nie jest pusty
     if(isText) {
@@ -191,7 +191,7 @@ let addTask = function() {
         });
         console.log(links);
         let task = new Task((currentId.toString()), text, links);
-        
+
         todoStore.setItem(task.id, task).then(function(value) {
             // This will output `1`.
             listOfAllTasks.push(task);
@@ -204,13 +204,13 @@ let addTask = function() {
     }
     taskTextarea[0].focus();
     taskTextarea[0].value = "";
-    
-    
+
+
 }
 
 // Dołacza zadanie do dokumentu
 let appendTask = function(task = []) {
-    
+
     //// Tworzenie elementow
     let li = document.createElement("li");
     let taskDiv = document.createElement("div");
@@ -218,7 +218,7 @@ let appendTask = function(task = []) {
     let text = document.createElement("p");
     let links = document.createElement("p");
     let linksUl = document.createElement("ul");
-    
+
     let date = document.createElement("span");
 
     let doingIcon = document.createElement("i");
@@ -249,9 +249,9 @@ let appendTask = function(task = []) {
             linksLi.innerHTML = `<a href="${task.links[i]}">${task.links[i]}</a>`;
             linksUl.appendChild(linksLi);
         }
-       
+
     };
-    
+
     date.innerHTML += task.startDay + " " + task.startHour;
 
     //console.log(li);
@@ -271,7 +271,7 @@ let appendTask = function(task = []) {
     console.log(li);
     console.log(listTaskUl);
     listTaskUl[0].appendChild(li);
-    
+
     removeBtn[appendTaskId].addEventListener("click", removeTask, false);
     inProgressBtn[appendTaskId].addEventListener("click", () => {
         changeState("in progress");
@@ -292,7 +292,7 @@ let removeTask = (e) => {
     parentTask.removeChild(task);
     appendTaskId -= 1;
 
-    
+
     todoStore.removeItem(taskId).then(function() {
         // Run this code once the key has been removed.
         console.log('Task deleted');
@@ -300,7 +300,7 @@ let removeTask = (e) => {
         // This code runs if there were any errors
         console.log(err);
     });
-    
+
 }
 
 let changeState = (state) => {
@@ -330,6 +330,6 @@ let changeState = (state) => {
     }).catch(function(err) {
         console.log(err);
     });
-    
+
     //removeTask(event);
 }
