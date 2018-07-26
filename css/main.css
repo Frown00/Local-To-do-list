@@ -1,0 +1,157 @@
+body {
+    background-image: url("../img/geometric-background.png");
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif; 
+}
+
+header {
+    text-align: center;
+    width: 100%;
+    background-color: lightseagreen;
+    color: white;
+}
+
+nav {
+    display: flex;
+    justify-content: center;
+    margin-top: 3%;
+    width: 70%;
+    height: 90px;
+}
+
+nav #time-buttons {
+    display: flex;
+    width: 100%;
+    
+}
+
+nav button {
+    flex-grow: 1;
+    border-radius: 10px 10px 0 0;
+    background-color:lightskyblue;
+    border: 1px solid blue;
+}
+
+nav button:focus {
+    outline: 0;
+    box-shadow: 0 0 3pt 2pt blue;
+}
+
+
+main {
+    width: 70%;
+    min-height: 50vh;
+    background-color: rgba(255, 255, 255, 0.9);    
+    margin-bottom: 30px;
+    border-radius: 0 0 10px 10px;
+    box-shadow: 2pt 5pt 10pt 0.1pt black;
+}
+
+main ul {
+    list-style-type: none;
+    padding: 40px;
+}
+
+main ul.links {
+    list-style-type: disc;
+    margin-left: 40px;
+    
+    padding: 0px;
+}
+
+main ul.links li {
+    margin-bottom: 15px;
+}
+
+.links-title {
+    margin-left: 15px;
+}
+
+#add-task-section {
+    display:flex;
+    align-items: center;
+    justify-content: center;
+    height: 100px;
+    margin-top: 50px;
+    padding: 20px;
+    
+}
+
+
+.task-textarea {
+    margin-right: 20px;
+    margin-left: 20px;
+    font-size: 25px;
+    flex-grow: 1;
+    resize: none;
+}
+
+#add-task-btn {
+    font-size: 40px;
+    margin-right: 20px;
+}
+
+.round-button {
+    display:block;
+    height: 90px;
+    width: 90px;
+    border-radius: 50%;
+    border: 0;
+    
+  }
+
+.round-button:focus {
+    outline: 0;
+    box-shadow: 0 0 3pt 2pt blue;
+  }
+
+button:focus {
+    
+}
+
+.task {
+    background-color: white;
+    min-height: 100px;
+    margin-top: 40px;
+    border: 1px solid black;
+    flex-grow: 1;
+}
+
+.icons {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    background-color: white;
+    min-height: 100px;
+    min-width: 90px;
+    margin-top: 40px;
+    margin-right: 90px;
+    border: 1px solid black;
+}
+
+.big-icon {
+    font-size: 35px;
+}
+
+.task-container {
+    display: flex;
+}
+
+.icon-trash:hover {
+    color: red;
+}
+
+.icon-ok-circled:hover {
+    color: lime;
+}
+
+.icon-pencil-squared:hover {
+    color: lightskyblue;
+}
+
+.icon-flag:hover {
+    color: lightgrey;
+}
