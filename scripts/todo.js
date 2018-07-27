@@ -8,73 +8,96 @@ Date.prototype.timeNow = function () {
      return ((this.getHours() < 10)?"0":"") + this.getHours() +":"+ ((this.getMinutes() < 10)?"0":"") + this.getMinutes() +":"+ ((this.getSeconds() < 10)?"0":"") + this.getSeconds();
 }
 
-var uniqueId = function() {
-    return 'id-' + Math.random().toString(36).substr(2, 16);
-};
+
+
 // Zainicjowanie konstruktora dla Obiektu Task
-function Task(id, text = "Task", links = [], images = [], date = new Date(), progressDate = new Date()) {
-    this.id = id;
-    this.state = "todo";
-
-    this.text = text;
-    this.links = links;
-    this.images = images;
-
-    this.date = date;
-    this.startDay = this.date.today();
-    this.startHour = this.date.timeNow();
-
-    this.progressDate = progressDate;
-    this.progressStartDay = this.progressDate.today();
-    this.progressStartHour = this.progressDate.timeNow();
+class Task {
+    
+    constructor(id, text = "Task", links = [], images = [], date = new Date(), progressDate = new Date()) {
+        this.id = id;
+        this.state = "todo";
+    
+        this.text = text;
+        this.links = links;
+        this.images = images;
+    
+        this.date = date;
+        this.startDay = this.date.today();
+        this.startHour = this.date.timeNow();
+    
+        this.progressDate = progressDate;
+        this.progressStartDay = this.progressDate.today();
+        this.progressStartHour = this.progressDate.timeNow();
+    }
+    
 }
 
 // Zmienne
-    //let listOfTasks = [];
 let listOfAllTasks = [];           // Przechowuje liste zadan do zrobienia
-
 let currentId = 1;
 let appendTaskId = 0;
-let listTaskUl = document.getElementsByClassName("list-of-tasks");
+
+
 // Baza IndexedDB
-let todoStore = localforage.createInstance({
-    name: "Store for to do task"
+let taskStore = localforage.createInstance({
+    name: "task_store"
+});
+
+
+//// URL do podstron/zakladek ////
+let todoUrl = "http://localhost/Local-To-do-list/todo.html";
+let doingUrl = "http://localhost/Local-To-do-list/doing.html";
+let doneUrl = "http://localhost/Local-To-do-list/done.html";
+
+//// HANDLARY ////
+let todoBtn = document.getElementById("todo");
+let doingBtn = document.getElementById("doing");
+let doneBtn = document.getElementById("done");
+
+let taskTextarea = document.getElementsByClassName("task-textarea");
+let listTaskUl = document.getElementsByClassName("list-of-tasks");
+let haveDoneBtn = document.getElementsByClassName("icon-ok-circled");
+let inProgressBtn = document.getElementsByClassName("icon-flag");
+let removeBtn = document.getElementsByClassName("icon-trash");
+
+
+//// LISTENERY ////
+todoBtn.addEventListener("click", () => {
+    displayPage(todoUrl);
+    appendAllTasks(listOfAllTasks);
+});
+
+doingBtn.addEventListener("click", () => {
+    displayPage(doingUrl);
+});
+
+doneBtn.addEventListener("click", () => {
+    displayPage(doneUrl);
 });
 
 
 
-
-
-
-
-//////  XMLHttpRequest   //////
+//////////////////////  XTMLHttpRequest / AJAX   ///////////////////////////////
 let get = (url) => {
-    // Return a new promise.
-    return new Promise(function(resolve, reject) {
-      // Do the usual XHR stuff
-      var xhr = new XMLHttpRequest();
-      xhr.open('GET', url);
 
-      xhr.onload = function() {
-        // This is called even on 404 etc
-        // so check the status
-        if (xhr.status == 200) {
-          // Resolve the promise with the response text
-          resolve(xhr.responseText);
-        }
-        else {
-          // Otherwise reject with the status text
-          // which will hopefully be a meaningful error
-          reject(Error(xhr.statusText));
-        }
-      };
+    return new Promise((resolve, reject) =>{
+      
+        let xhr = new XMLHttpRequest();
+        xhr.open('GET', url);
 
-      // Handle network errors
-      xhr.onerror = function() {
-        reject(Error("Network Error"));
-      };
+        xhr.onload = () => {
+            if (xhr.status == 200) {
+                resolve(xhr.responseText);
+            }
+            else {
+                reject(Error(xhr.statusText));
+            }
+        };
 
-      // Make the request
+        xhr.onerror = () => {
+            reject(Error("Network Error"));
+        };
+
       xhr.send();
     });
 }
@@ -85,45 +108,52 @@ let displayPage = (url) => {
         document.getElementById("main").innerHTML = response
         let arr = [];
         let len = 0;
-
-        todoStore.length().then(function(numberOfKeys){
+        let addTaskBtn = document.getElementById("add-task-btn");
+        taskStore.length().then(function(numberOfKeys){
             len = numberOfKeys;
         }).catch(function(err) {
             console.log(err);
         });
 
-        todoStore.iterate(function(task, key, iterationNumber) {
-            //console.log(typeof task);
-            //let t = new Task(task.id, task.text, task.links, task.images);
+        //// Dodanie zadan z bazy do listy ////
+        taskStore.iterate((task, key, iterationNumber) => {
+
             arr.push(task);
             if(iterationNumber > len - 1){
-                console.log(arr);
                 return arr;
             }
-        }).then(function(arrTask){
-            if(arrTask.length > 0) {
-                listOfAllTasks = arrTask;
-                listOfAllTasks = _.sortBy(listOfAllTasks, 'id');
-                lastTask = _.last(listOfAllTasks);
-                currentId = parseInt(lastTask.id) + 1;
 
-                // W zaleznosci od wybranego url dostosuj wyswietlane zadania
+        }).then((arrTask) =>{
+
+            if(arrTask!== undefined && arrTask.length > 0) {
+                listOfAllTasks = arrTask;
+                
+                // W zaleznosci od wybranego url dostosowuje wyswietlane zadania
                 if(url === todoUrl) {
+
+                    listOfAllTasks = _.sortBy(listOfAllTasks, 'id');
+                    lastTask = _.last(listOfAllTasks);
+                    currentId = parseInt(lastTask.id) + 1;                                          // Inkrementacja id od ostatniego zapisanego zadania
                     listOfAllTasks = _.filter(listOfAllTasks, (task) => task.state === "todo");
-                //appendAllTasks(listOfAllTasks);
                     appendAllTasks(listOfAllTasks);
+                
                 } else if(url === doingUrl) {
+                
                     listOfAllTasks = _.filter(listOfAllTasks, (task) => task.state === "in progress");
                     appendAllTasks(listOfAllTasks);
+                
                 } else if(url === doneUrl) {
+                    // TODO
+                    // Sortowanie po dacie, aby moc wyswietlic zrobione zadania segregujac po dniu
                     listOfAllTasks = _.filter(listOfAllTasks, (task) => task.state === "have done");
                     appendAllTasks(listOfAllTasks);
+                
                 }
 
             } else {
                 currentId = 1;
             }
-        }).catch(function(err) {
+        }).catch((err) => {
             console.log(err);
         });
 
@@ -131,88 +161,56 @@ let displayPage = (url) => {
         console.error("Failed!", error);
     });
 }
-//console.log(todoTasks);
-/////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////
 
-let todoBtn = document.getElementById("todo");
-let doingBtn = document.getElementById("doing");
-let doneBtn = document.getElementById("done");
-let todoUrl = "https://frown00.github.io/Local-To-do-list/todo.html";
-let doingUrl = "https://frown00.github.io/Local-To-do-list/doing.html";
-let doneUrl = "https://frown00.github.io/Local-To-do-list/done.html";
+//////////////////////  METODY GLOBALNE   ///////////////////////////////
+
+//// Dodanie zadania do listy i bazy ////
+let addTask = () => {
+    text = taskTextarea[0].value;
+    links = [];
+
+    //// Dodanie poprawnego zadania do bazy ////
+    isText = text.replace(/\s/g, "").length;      // Sprawdzenie czy tekst nie jest pusty
+    if(isText) {
+        text = text.replace(" ", "&nbsp");              // Podmiana białych znaków na odpowiednik html (non-breaking space)
+        text = text.replace(/\r?\n/g, "<br>");          // Podmiana nowej linii w stringu na odpowiednik html
+        
+        let urlRegex = /(https?:\/\/[^\s]+)/g;          // Regex do rozpoznawania url (https, http) 
+        text = text.replace(urlRegex, function(url) {   // Usuniecie z tekstu linkow i dodanie ich do tablicy
+            links.push(url);
+            return "";
+        });
+        
+        // Dodanie do bazy oraz do tablicy zdan //
+        let task = new Task((currentId.toString()), text, links);
+        taskStore.setItem(task.id, task).then(function(value) { 
+            // This will output `1`.
+            listOfAllTasks.push(task);
+            appendTask(task);
+            currentId += 1;
+        }).catch(function(err) {
+            console.log(err);
+        });
+    }
+    taskTextarea[0].focus();
+    taskTextarea[0].value = "";     // Wyczyszczenie pola tekstowego
+}
 
 
-let addTaskBtn = document.getElementById("add-task-btn");
-let taskTextarea = document.getElementsByClassName("task-textarea");
-//let listTaskUl = document.getElementsByClassName("list-of-tasks");
-let haveDoneBtn = document.getElementsByClassName("icon-ok-circled");
-let inProgressBtn = document.getElementsByClassName("icon-flag");
-let removeBtn = document.getElementsByClassName("icon-trash");
-
-todoBtn.addEventListener("click", () => {
-    displayPage(todoUrl);
-    appendAllTasks(listOfAllTasks);
-});
-doingBtn.addEventListener("click", () => {
-    displayPage(doingUrl);
-});
-doneBtn.addEventListener("click", function() {
-    displayPage(doneUrl);
-});
-
-
-////////////////////////////////////////////////////////
-(function(){
-  displayPage(todoUrl);
-})();
-//doneBtn.addEventListener("click", displayPage(doneUrl));
-// Dodawanie zadania do strony
+//// Dołaczanie wszystkich zapisanych zadań do DOM ////
 let appendAllTasks = (listTasks) => {
-    // Dołaczanie zadań do dokumentu html
-    console.log("Dlugosc:" + listTasks.length);
     appendTaskId = 0;
     for(let i = 0; i < listTasks.length; i++) {
         appendTask(listTasks[i]);
     }
 }
 
-let addTask = function() {
-    text = taskTextarea[0].value;
+//// Dołacza zadanie do DOM ////
+let appendTask = (task = []) => {
 
-    links = [];
-    isText = text.replace(/\s/g, "").length;      // Sprawdzenie czy tekst nie jest pusty
-    if(isText) {
-        text = text.replace(" ", "&nbsp");        // Podmiana białych znaków na odpowiednik html (non-breaking space)
-        text = text.replace(/\r?\n/g, "<br>");    // Podmiana nowej linii w stringu na odpowiednik html
-        let urlRegex = /(https?:\/\/[^\s]+)/g;    // Regex do rozpoznawania url (https, http)
-        text = text.replace(urlRegex, function(url) {
-            links.push(url);
-            return "";
-        });
-        console.log(links);
-        let task = new Task((currentId.toString()), text, links);
-
-        todoStore.setItem(task.id, task).then(function(value) {
-            // This will output `1`.
-            listOfAllTasks.push(task);
-            appendTask(task);
-            currentId += 1;
-        }).catch(function(err) {
-            // This code runs if there were any errors
-            console.log(err);
-        });
-    }
-    taskTextarea[0].focus();
-    taskTextarea[0].value = "";
-
-
-}
-
-// Dołacza zadanie do dokumentu
-let appendTask = function(task = []) {
-
-    //// Tworzenie elementow
-    let li = document.createElement("li");
+    //// Tworzenie elementow ////
+    let taskLi = document.createElement("li");
     let taskDiv = document.createElement("div");
     let iconsDiv = document.createElement("div");
     let text = document.createElement("p");
@@ -226,22 +224,22 @@ let appendTask = function(task = []) {
     let editIcon = document.createElement("i");
     let doneIcon = document.createElement("i");
 
-    //// Ustawainie atrybutow
+    //// Ustawainie atrybutow ////
     doingIcon.setAttribute("class", "big-icon icon-flag");
     removeIcon.setAttribute("class", "big-icon icon-trash");
     editIcon.setAttribute("class", "big-icon icon-pencil-squared");
     doneIcon.setAttribute("class", "big-icon icon-ok-circled");
 
-    li.setAttribute("class", "task-container");
-    li.setAttribute("data-task", task.id);
+    taskLi.setAttribute("class", "task-container");
+    taskLi.setAttribute("data-task", task.id);
     taskDiv.setAttribute("class", "task");
     iconsDiv.setAttribute("class", "icons");
     linksUl.setAttribute("class", "links");
 
-    //// Obrobka tekstu
+    //// Obrobka tekstu ////
     text.innerHTML = task.text;
 
-    //// Obrobka linkow
+    //// Obrobka linkow ////
     if(task.links.length > 0) {
         links.innerHTML = `<h4 class="links-title"> Links: </h4>`;
         for(let i = 0; i < task.links.length; i++) {
@@ -252,9 +250,10 @@ let appendTask = function(task = []) {
 
     };
 
+    //// Obrobka daty ////
     date.innerHTML += task.startDay + " " + task.startHour;
 
-    //console.log(li);
+    // Dołaczanie elementow do DOM'u
     links.appendChild(linksUl);
 
     taskDiv.appendChild(text);
@@ -266,11 +265,10 @@ let appendTask = function(task = []) {
     iconsDiv.appendChild(editIcon);
     iconsDiv.appendChild(removeIcon);
 
-    li.appendChild(taskDiv);
-    li.appendChild(iconsDiv);
-    console.log(li);
-    console.log(listTaskUl);
-    listTaskUl[0].appendChild(li);
+    taskLi.appendChild(taskDiv);
+    taskLi.appendChild(iconsDiv);
+
+    listTaskUl[0].appendChild(taskLi);
 
     removeBtn[appendTaskId].addEventListener("click", removeTask, false);
     inProgressBtn[appendTaskId].addEventListener("click", () => {
@@ -283,46 +281,45 @@ let appendTask = function(task = []) {
 }
 
 
-
+//// Usuwanie zadania z DOM oraz z bazy ////
 let removeTask = (e) => {
-    console.log(e.target);
-    let task = e.target.parentElement.parentElement; // li
-    let parentTask = task.parentElement; // ul
-    let taskId = task.dataset.task; // id
+    const task = e.target.parentElement.parentElement;  // taskLi
+    const parentTask = task.parentElement;              // taskUl
+    const taskId = task.dataset.task;                   // id
     parentTask.removeChild(task);
     appendTaskId -= 1;
 
-
-    todoStore.removeItem(taskId).then(function() {
-        // Run this code once the key has been removed.
-        console.log('Task deleted');
+    taskStore.removeItem(taskId).then(function() {
+        //console.log('Task deleted');
     }).catch(function(err) {
-        // This code runs if there were any errors
         console.log(err);
     });
 
 }
 
+//// Zmiana stanu wybranego zadania ////
+////    state = todo -> todo
+////    state = in progress -> doing
+////    state = have done -> done
 let changeState = (state) => {
-    console.log(event);
-    console.log(state);
-    const task = event.target.parentElement.parentElement;
-    const taskId = task.dataset.task;
-    const parentTask = task.parentElement;
-    let taskCopy;
+    const task = event.target.parentElement.parentElement;  // taskLi
+    const parentTask = task.parentElement;                  // taskUl 
+    const taskId = task.dataset.task;                       // id
+    
+    let taskCopy;                                           // Kopia obiektu z bazy potrzebna do przeniesienia (IndexedDB nie umozliwia zmian wartosci w krotkach)
 
-    todoStore.getItem(taskId).then(function(t) {
+    taskStore.getItem(taskId).then(function(t) {
         taskCopy = Object.assign({}, t);
         taskCopy.state = state;
     }).then(function(t) {
-        todoStore.removeItem(taskId).then(function() {
+        taskStore.removeItem(taskId).then(function() {
             parentTask.removeChild(task);
             appendTaskId -= 1;
         }).catch(function(err){
             console.log(err);
         });
     }).then(function(task){
-        todoStore.setItem(taskCopy.id, taskCopy).then(function() {
+        taskStore.setItem(taskCopy.id, taskCopy).then(function() {
 
         }).catch(function(err){
             console.log(err);
@@ -330,6 +327,15 @@ let changeState = (state) => {
     }).catch(function(err) {
         console.log(err);
     });
-
-    //removeTask(event);
 }
+
+////////////////////////////////////////////////////////
+
+
+(() => {
+    displayPage(todoUrl);
+})();
+
+
+
+
