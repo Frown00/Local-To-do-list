@@ -12,24 +12,24 @@ Date.prototype.timeNow = function () {
 
 // Zainicjowanie konstruktora dla Obiektu Task
 class Task {
-    
+
     constructor(id, text = "Task", links = [], images = [], date = new Date(), progressDate = new Date()) {
         this.id = id;
         this.state = "todo";
-    
+
         this.text = text;
         this.links = links;
         this.images = images;
-    
+
         this.date = date;
         this.startDay = this.date.today();
         this.startHour = this.date.timeNow();
-    
+
         this.progressDate = progressDate;
         this.progressStartDay = this.progressDate.today();
         this.progressStartHour = this.progressDate.timeNow();
     }
-    
+
 }
 
 // Zmienne
@@ -45,9 +45,10 @@ let taskStore = localforage.createInstance({
 
 
 //// URL do podstron/zakladek ////
-let todoUrl = "http://localhost/Local-To-do-list/todo.html";
-let doingUrl = "http://localhost/Local-To-do-list/doing.html";
-let doneUrl = "http://localhost/Local-To-do-list/done.html";
+let todoUrl = "https://frown00.github.io/Local-To-do-list/todo.html";
+let doingUrl = "https://frown00.github.io/Local-To-do-list/doing.html";
+let doneUrl = "https://frown00.github.io/Local-To-do-list/done.html";
+
 
 //// HANDLARY ////
 let todoBtn = document.getElementById("todo");
@@ -81,7 +82,7 @@ doneBtn.addEventListener("click", () => {
 let get = (url) => {
 
     return new Promise((resolve, reject) =>{
-      
+
         let xhr = new XMLHttpRequest();
         xhr.open('GET', url);
 
@@ -127,7 +128,7 @@ let displayPage = (url) => {
 
             if(arrTask!== undefined && arrTask.length > 0) {
                 listOfAllTasks = arrTask;
-                
+
                 // W zaleznosci od wybranego url dostosowuje wyswietlane zadania
                 if(url === todoUrl) {
 
@@ -136,18 +137,18 @@ let displayPage = (url) => {
                     currentId = parseInt(lastTask.id) + 1;                                          // Inkrementacja id od ostatniego zapisanego zadania
                     listOfAllTasks = _.filter(listOfAllTasks, (task) => task.state === "todo");
                     appendAllTasks(listOfAllTasks);
-                
+
                 } else if(url === doingUrl) {
-                
+
                     listOfAllTasks = _.filter(listOfAllTasks, (task) => task.state === "in progress");
                     appendAllTasks(listOfAllTasks);
-                
+
                 } else if(url === doneUrl) {
                     // TODO
                     // Sortowanie po dacie, aby moc wyswietlic zrobione zadania segregujac po dniu
                     listOfAllTasks = _.filter(listOfAllTasks, (task) => task.state === "have done");
                     appendAllTasks(listOfAllTasks);
-                
+
                 }
 
             } else {
@@ -175,16 +176,16 @@ let addTask = () => {
     if(isText) {
         text = text.replace(" ", "&nbsp");              // Podmiana białych znaków na odpowiednik html (non-breaking space)
         text = text.replace(/\r?\n/g, "<br>");          // Podmiana nowej linii w stringu na odpowiednik html
-        
-        let urlRegex = /(https?:\/\/[^\s]+)/g;          // Regex do rozpoznawania url (https, http) 
+
+        let urlRegex = /(https?:\/\/[^\s]+)/g;          // Regex do rozpoznawania url (https, http)
         text = text.replace(urlRegex, function(url) {   // Usuniecie z tekstu linkow i dodanie ich do tablicy
             links.push(url);
             return "";
         });
-        
+
         // Dodanie do bazy oraz do tablicy zdan //
         let task = new Task((currentId.toString()), text, links);
-        taskStore.setItem(task.id, task).then(function(value) { 
+        taskStore.setItem(task.id, task).then(function(value) {
             // This will output `1`.
             listOfAllTasks.push(task);
             appendTask(task);
@@ -303,9 +304,9 @@ let removeTask = (e) => {
 ////    state = have done -> done
 let changeState = (state) => {
     const task = event.target.parentElement.parentElement;  // taskLi
-    const parentTask = task.parentElement;                  // taskUl 
+    const parentTask = task.parentElement;                  // taskUl
     const taskId = task.dataset.task;                       // id
-    
+
     let taskCopy;                                           // Kopia obiektu z bazy potrzebna do przeniesienia (IndexedDB nie umozliwia zmian wartosci w krotkach)
 
     taskStore.getItem(taskId).then(function(t) {
@@ -335,7 +336,3 @@ let changeState = (state) => {
 (() => {
     displayPage(todoUrl);
 })();
-
-
-
-
