@@ -3,11 +3,11 @@
     <head>
         <meta charset="utf-8" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>Todo List | Tasks to do and have done</title>
+        <title>List of tasks | Make a task to do</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" type="text/css" media="screen" href="css/normalize.css" />
+        <link rel="stylesheet" type="text/css" href="css/normalize.css" />
         <link rel="stylesheet" type="text/css" href="css/fontello/css/fontello.css">
-        <link rel="stylesheet" type="text/css" media="screen" href="css/main.css" />
+        <link rel="stylesheet" type="text/css" href="css/main.css" />
         <script src="scripts/localforage.js"></script>
         <script src="scripts/underscore-min.js"></script>
         
@@ -15,18 +15,18 @@
     <body>
         <header>
             <div id="page-title">
-                <h1>To do list</h1>
+                <h1>List of tasks</h1>
             </div>
             <div id="page-subtitle">
-                <p>Make a list of tasks to do and archive it.</p>
+                <p>It's locally saved, useful for planning or just store.</p>
             </div>
         </header>
         <nav>
             <div id="time-buttons">
                 
-                <button class="todo" id="todo">To do</button>
-                <button class="doing" id="doing">Doing</button>   
-                <button class="done" id="done">Done</button>
+                <button class="todo" id="todo">Tasks to do &nbsp;<span id="number-todo" class="number-circle">0</span></button>
+                <button class="doing" id="doing">In progress  &nbsp;<span id="number-inprogress" class="number-circle">0</span></button>   
+                <button class="done" id="done">Have done  &nbsp;<span id="number-havedone" class="number-circle">0</span></button>
                 
             </div>
         </nav>

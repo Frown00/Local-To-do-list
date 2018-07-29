@@ -13,8 +13,8 @@ Date.prototype.timeNow = function () {
 // Zainicjowanie konstruktora dla Obiektu Task
 class Task {
 
-    constructor(id, text = "Task", links = [], images = [], date = new Date(), progressDate = new Date()) {
-        this.id = id;
+    constructor(idTask, text = "Task", links = [], images = [], date = new Date(), progressDate = new Date()) {
+        this.idTask = idTask;
         this.state = "todo";
 
         this.text = text;
@@ -37,6 +37,9 @@ let listOfAllTasks = [];           // Przechowuje liste zadan do zrobienia
 let currentId = 1;
 let appendTaskId = 0;
 
+let numTodo = 0;
+let numInProgress = 0;
+let numHaveDone = 0;
 
 // Baza IndexedDB
 let taskStore = localforage.createInstance({
@@ -45,9 +48,9 @@ let taskStore = localforage.createInstance({
 
 
 //// URL do podstron/zakladek ////
-let todoUrl = "https://frown00.github.io/Local-To-do-list/todo.html";
-let doingUrl = "https://frown00.github.io/Local-To-do-list/doing.html";
-let doneUrl = "https://frown00.github.io/Local-To-do-list/done.html";
+let todoUrl = "https://frown00.github.io/local-to-do-list/todo.html";
+let doingUrl = "https://frown00.github.io/local-to-do-list/doing.html";
+let doneUrl = "https://frown00.github.io/local-to-do-list/done.html";
 
 
 //// HANDLARY ////
@@ -55,10 +58,16 @@ let todoBtn = document.getElementById("todo");
 let doingBtn = document.getElementById("doing");
 let doneBtn = document.getElementById("done");
 
+let todoNumber = document.getElementById("number-todo");
+let inProgressNumber = document.getElementById("number-inprogress");
+let haveDoneNumber = document.getElementById("number-havedone");
+
 let taskTextarea = document.getElementsByClassName("task-textarea");
 let listTaskUl = document.getElementsByClassName("list-of-tasks");
 let haveDoneBtn = document.getElementsByClassName("icon-ok-circled");
 let inProgressBtn = document.getElementsByClassName("icon-flag");
+
+let editBtn = document.getElementsByClassName("icon-pencil-squared");
 let removeBtn = document.getElementsByClassName("icon-trash");
 
 
@@ -128,13 +137,15 @@ let displayPage = (url) => {
 
             if(arrTask!== undefined && arrTask.length > 0) {
                 listOfAllTasks = arrTask;
+                listOfAllTasks.map((task) => task.idTask = parseInt(task.idTask));
+                listOfAllTasks = _.sortBy(listOfAllTasks, 'idTask');
+
 
                 // W zaleznosci od wybranego url dostosowuje wyswietlane zadania
                 if(url === todoUrl) {
 
-                    listOfAllTasks = _.sortBy(listOfAllTasks, 'id');
                     lastTask = _.last(listOfAllTasks);
-                    currentId = parseInt(lastTask.id) + 1;                                          // Inkrementacja id od ostatniego zapisanego zadania
+                    currentId = parseInt(lastTask.idTask) + 1;                                          // Inkrementacja id od ostatniego zapisanego zadania
                     listOfAllTasks = _.filter(listOfAllTasks, (task) => task.state === "todo");
                     appendAllTasks(listOfAllTasks);
 
@@ -174,18 +185,19 @@ let addTask = () => {
     //// Dodanie poprawnego zadania do bazy ////
     isText = text.replace(/\s/g, "").length;      // Sprawdzenie czy tekst nie jest pusty
     if(isText) {
-        text = text.replace(" ", "&nbsp");              // Podmiana białych znaków na odpowiednik html (non-breaking space)
-        text = text.replace(/\r?\n/g, "<br>");          // Podmiana nowej linii w stringu na odpowiednik html
 
-        let urlRegex = /(https?:\/\/[^\s]+)/g;          // Regex do rozpoznawania url (https, http)
+
+        let urlRegex = /(https?:\/\/[\S]+)/g;          // Regex do rozpoznawania url (https, http)
         text = text.replace(urlRegex, function(url) {   // Usuniecie z tekstu linkow i dodanie ich do tablicy
             links.push(url);
             return "";
         });
 
+        text = text.replace(" ", "&nbsp");              // Podmiana białych znaków na odpowiednik html (non-breaking space)
+        text = text.replace(/\r?\n/g, "<br> ");          // Podmiana nowej linii w stringu na odpowiednik html
         // Dodanie do bazy oraz do tablicy zdan //
         let task = new Task((currentId.toString()), text, links);
-        taskStore.setItem(task.id, task).then(function(value) {
+        taskStore.setItem(task.idTask, task).then(function(value) {
             // This will output `1`.
             listOfAllTasks.push(task);
             appendTask(task);
@@ -193,6 +205,9 @@ let addTask = () => {
         }).catch(function(err) {
             console.log(err);
         });
+
+        numTodo++;
+        updateTaskNumbers();
     }
     taskTextarea[0].focus();
     taskTextarea[0].value = "";     // Wyczyszczenie pola tekstowego
@@ -218,7 +233,7 @@ let appendTask = (task = []) => {
     let links = document.createElement("p");
     let linksUl = document.createElement("ul");
 
-    let date = document.createElement("span");
+    let date = document.createElement("div");
 
     let doingIcon = document.createElement("i");
     let removeIcon = document.createElement("i");
@@ -226,17 +241,20 @@ let appendTask = (task = []) => {
     let doneIcon = document.createElement("i");
 
     //// Ustawainie atrybutow ////
-    doingIcon.setAttribute("class", "big-icon icon-flag");
-    removeIcon.setAttribute("class", "big-icon icon-trash");
-    editIcon.setAttribute("class", "big-icon icon-pencil-squared");
-    doneIcon.setAttribute("class", "big-icon icon-ok-circled");
+    doingIcon.setAttribute("class", "setting-icon icon-flag");
+    removeIcon.setAttribute("class", "setting-icon icon-trash");
+    editIcon.setAttribute("class", "setting-icon icon-pencil-squared");
+    doneIcon.setAttribute("class", "setting-icon icon-ok-circled");
 
     taskLi.setAttribute("class", "task-container");
-    taskLi.setAttribute("data-task", task.id);
+    taskLi.setAttribute("data-task", task.idTask);
     taskDiv.setAttribute("class", "task");
-    iconsDiv.setAttribute("class", "icons");
+    iconsDiv.setAttribute("class", "icons-container");
     linksUl.setAttribute("class", "links");
 
+    text.setAttribute("class", "task-text");
+    links.setAttribute("class", "links");
+    date.setAttribute("class", "date");
     //// Obrobka tekstu ////
     text.innerHTML = task.text;
 
@@ -271,7 +289,11 @@ let appendTask = (task = []) => {
 
     listTaskUl[0].appendChild(taskLi);
 
-    removeBtn[appendTaskId].addEventListener("click", removeTask, false);
+    // Edytowanie usuwanie
+    editBtn[appendTaskId].addEventListener("click", editTask);
+    removeBtn[appendTaskId].addEventListener("click", removeTask);
+
+    // Zmiana stanu zadania
     inProgressBtn[appendTaskId].addEventListener("click", () => {
         changeState("in progress");
     });
@@ -279,6 +301,64 @@ let appendTask = (task = []) => {
         changeState("have done");
     });
     appendTaskId += 1;
+
+}
+
+let editTask = (e) => {
+    const task = e.target.parentElement.parentElement;  // taskLi
+    //const parentTask = task.parentElement;              // taskUl
+    //const taskId = task.dataset.task;                   // id
+    const taskDiv = task.firstChild;
+
+    let editText;
+    let editLinks;
+
+
+    let taskDivFirst = taskDiv.firstChild;
+    let elementNum = 0;
+    while (taskDivFirst) {
+
+        if(elementNum === 0) {
+            editText = taskDivFirst;
+        } else if(elementNum === 1) {
+            editLinks = taskDivFirst.children[1];
+        }
+        taskDiv.removeChild(taskDivFirst);
+        taskDivFirst = taskDiv.firstChild;
+
+        elementNum++;
+    }
+
+    const editTextarea = document.createElement("textarea");
+    editTextarea.setAttribute("class", "edit-task-textarea");
+    //editText = editText.replace("&nbsp", " ");              // Podmiana białych znaków na odpowiednik html (non-breaking space)
+    //editTextarea = editText.replace("<br>", "");          // Podmiana nowej linii w stringu na odpowiednik html
+    console.log(editText.innerHTML);
+    editText.innerHTML = editText.innerHTML.replace("\r\n", "<br>/");
+    editText.innerHTML = editText.innerHTML.replace("&nbsp;", " ");
+
+    console.log(editText.innerHTML);
+    editTextarea.innerHTML = editText.innerHTML + "\r\n";
+
+
+    if(editLinks !== undefined) {
+        const linksInTask = editLinks.getElementsByTagName("a");
+        const arrayOfLinks = [];
+        for(let i = 0; i < linksInTask.length; i++) {
+            arrayOfLinks.unshift(linksInTask[i].getAttribute("href"));
+        }
+        console.log(arrayOfLinks);
+
+        for(let i = 0; i < arrayOfLinks.length; i++) {
+            editTextarea.innerHTML += arrayOfLinks[i] + "\r\n";
+        }
+    }
+
+
+    console.log(editTextarea);
+    taskDiv.appendChild(editTextarea);
+
+
 }
 
 
@@ -287,14 +367,30 @@ let removeTask = (e) => {
     const task = e.target.parentElement.parentElement;  // taskLi
     const parentTask = task.parentElement;              // taskUl
     const taskId = task.dataset.task;                   // id
+
     parentTask.removeChild(task);
     appendTaskId -= 1;
+    taskStore.getItem(taskId).then((task)=> {
+        let state = task.state;
+        if(state === "todo") {
+            numTodo--;
+        } else if(state === "in progress") {
+            numInProgress--;
+        } else if(state === "have done") {
+            numHaveDone--;
+        }
 
-    taskStore.removeItem(taskId).then(function() {
+        updateTaskNumbers();
+    }).catch((err) => {
+        console.log(err);
+    });
+
+    taskStore.removeItem(taskId).then(() => {
         //console.log('Task deleted');
     }).catch(function(err) {
         console.log(err);
     });
+
 
 }
 
@@ -302,7 +398,7 @@ let removeTask = (e) => {
 ////    state = todo -> todo
 ////    state = in progress -> doing
 ////    state = have done -> done
-let changeState = (state) => {
+let changeState = (targetState) => {
     const task = event.target.parentElement.parentElement;  // taskLi
     const parentTask = task.parentElement;                  // taskUl
     const taskId = task.dataset.task;                       // id
@@ -311,7 +407,27 @@ let changeState = (state) => {
 
     taskStore.getItem(taskId).then(function(t) {
         taskCopy = Object.assign({}, t);
-        taskCopy.state = state;
+        if(taskCopy.state === "todo") {
+            numTodo--;
+            if(targetState === "in progress")
+                numInProgress++;
+            else if(targetState === "have done")
+                numHaveDone++;
+        } else if(taskCopy.state === "in progress") {
+            if(targetState === "todo")
+                numTodo++;
+            else if(targetState === "have done")
+                numHaveDone++;
+        } else if(taskCopy.state === "have done") {
+            if(targetState === "todo")
+                numTodo++;
+            else if(targetState === "in progress")
+                numInProgress++;
+        }
+
+        updateTaskNumbers();
+
+        taskCopy.state = targetState;
     }).then(function(t) {
         taskStore.removeItem(taskId).then(function() {
             parentTask.removeChild(task);
@@ -320,7 +436,7 @@ let changeState = (state) => {
             console.log(err);
         });
     }).then(function(task){
-        taskStore.setItem(taskCopy.id, taskCopy).then(function() {
+        taskStore.setItem(taskCopy.idTask, taskCopy).then(function() {
 
         }).catch(function(err){
             console.log(err);
@@ -328,11 +444,55 @@ let changeState = (state) => {
     }).catch(function(err) {
         console.log(err);
     });
+
+
+
+}
+
+//// Uruchamiane tylko przy zaladowaniu strony
+let countTask = () => {
+
+    taskStore.iterate((task, key, iterationNumber) => {
+        let state = task.state;
+        if(state === "todo") {
+            numTodo++;
+        } else if(state === "in progress") {
+            numInProgress++;
+        } else if(state === "have done") {
+            numHaveDone++;
+        }
+    }).then(function() {
+        updateTaskNumbers();
+    }).catch(function(err) {
+        // This code runs if there were any errors
+        console.log(err);
+    });
+};
+
+let updateTaskNumbers = () => {
+    todoNumber.textContent = numTodo;
+    inProgressNumber.textContent = numInProgress;
+    haveDoneNumber.textContent = numHaveDone;
 }
 
 ////////////////////////////////////////////////////////
 
 
 (() => {
+    //window.location.reload(true);       // Resetuje cache powodujacy problemy przy zmianach w kodzie
+    // Przaladowanie pliku
+    if( window.localStorage )
+    {
+        if( !localStorage.getItem('firstLoad') )
+        {
+            localStorage['firstLoad'] = true;
+            window.location.reload();
+        }
+        else
+            localStorage.removeItem('firstLoad');
+    }
+
+    countTask();
     displayPage(todoUrl);
+
 })();

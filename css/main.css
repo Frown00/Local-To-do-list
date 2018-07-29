@@ -13,12 +13,20 @@ header {
     color: white;
 }
 
+a {
+	word-break: break-all;
+}
+
 nav {
     display: flex;
     justify-content: center;
     margin-top: 3%;
     width: 70%;
     height: 90px;
+}
+
+button {
+    cursor: pointer;
 }
 
 nav #time-buttons {
@@ -28,10 +36,11 @@ nav #time-buttons {
 }
 
 nav button {
-    flex-grow: 1;
+    width: 33.33%;
     border-radius: 10px 10px 0 0;
     background-color:lightskyblue;
     border: 1px solid blue;
+    font-size: 18px;
 }
 
 nav button:focus {
@@ -43,13 +52,18 @@ nav button:focus {
 main {
     width: 70%;
     min-height: 50vh;
-    background-color: rgba(255, 255, 255, 0.9);    
+    background-color: rgba(255, 255, 255);    
     margin-bottom: 30px;
     border-radius: 0 0 10px 10px;
     box-shadow: 2pt 5pt 10pt 0.1pt black;
+    
 }
 
-main ul {
+p {
+    word-break: break-all;
+}
+
+main ul.list-of-tasks {
     list-style-type: none;
     padding: 40px;
 }
@@ -57,16 +71,21 @@ main ul {
 main ul.links {
     list-style-type: disc;
     margin-left: 40px;
-    
     padding: 0px;
 }
 
 main ul.links li {
     margin-bottom: 15px;
+    overflow-wrap: break-word;
+
 }
 
 .links-title {
     margin-left: 15px;
+}
+
+p.links {
+    
 }
 
 #add-task-section {
@@ -75,22 +94,26 @@ main ul.links li {
     justify-content: center;
     height: 100px;
     margin-top: 50px;
-    padding: 20px;
-    
+    margin-left: 20px;
+    margin-right: 20px;
+    padding: 20px;   
 }
 
 
 .task-textarea {
     margin-right: 20px;
-    margin-left: 20px;
     font-size: 25px;
     flex-grow: 1;
     resize: none;
 }
 
+.edit-task-textarea {
+    min-height: 100px;
+    flex-grow: 1;
+}
+
 #add-task-btn {
     font-size: 40px;
-    margin-right: 20px;
 }
 
 .round-button {
@@ -102,6 +125,17 @@ main ul.links li {
     
   }
 
+.number-circle {
+    display: inline-block;
+    border-radius: 50%;
+    padding: 8px;
+    font-size: 0.7em;
+    color: white;
+    background: rgba(255, 51, 0, 0.6);
+    border: 1px solid rgb(170, 25, 0);
+    text-align: center;
+}
+
 .round-button:focus {
     outline: 0;
     box-shadow: 0 0 3pt 2pt blue;
@@ -112,32 +146,41 @@ button:focus {
 }
 
 .task {
-    background-color: white;
-    min-height: 100px;
-    margin-top: 40px;
-    border: 1px solid black;
-    flex-grow: 1;
+    width: 70%;
+    padding: 10px;
+    word-break: break-all;
 }
 
-.icons {
+.task-text {
+    
+}
+
+.icons-container {
     display: flex;
-    align-items: center;
-    justify-content: space-around;
-    flex-wrap: wrap;
-    background-color: white;
-    min-height: 100px;
-    min-width: 90px;
-    margin-top: 40px;
-    margin-right: 90px;
-    border: 1px solid black;
+    align-items: flex-start;
+    justify-content: flex-end;
+          
 }
 
-.big-icon {
+.setting-icon {
     font-size: 35px;
+    cursor: pointer;
 }
 
 .task-container {
     display: flex;
+    justify-content: space-between;
+    border-top: 2px solid lightgray;
+    min-height: 100px;
+}
+
+.task-container:first-of-type {
+    border-top: 0;
+}
+
+.date {
+    align-self: flex-end;
+    height: 1em;
 }
 
 .icon-trash:hover {
@@ -154,4 +197,63 @@ button:focus {
 
 .icon-flag:hover {
     color: lightgrey;
+}
+
+
+/* Smartphones (portrait and landscape) and small devices ----------- */
+@media only screen and (min-device-width : 120px) and (max-device-width :768px) {
+    /* Styles */
+    nav {
+        width: 100%;
+    }
+
+    main {
+        width: 100%;
+    }
+
+    .icons-container {
+        flex-direction: column;
+        
+    }
+
+    .task {
+        width: 90%;
+        padding: 10px;
+        word-break: break-all;
+    }
+
+    .setting-icon {
+        font-size: 30px;
+        margin-bottom: 10px;
+    }
+
+    main ul.list-of-tasks {
+        list-style-type: none;
+        padding: 10px;
+    }
+
+
+    #add-task-section {
+        display:flex;
+        align-items: center;
+        justify-content: center;
+        height: 100px;
+        margin-top: 50px;
+        margin-left: 5px;
+        margin-right: 5px;
+        padding: 0px;
+   
+    }
+}
+
+/* iPads (portrait and landscape) ----------- */
+@media only screen and (min-device-width : 768px) and (max-device-width : 1024px) {
+    /* Styles */
+    nav {
+        width: 100%;
+    }
+
+    main {
+        width: 100%;
+    }
 }
