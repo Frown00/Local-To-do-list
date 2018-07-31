@@ -119,7 +119,6 @@ let displayPage = (url) => {
         document.getElementById("main").innerHTML = response
         let arr = [];
         let len = 0;
-        let addTaskBtn = document.getElementById("add-task-btn");
         taskStore.length().then(function(numberOfKeys){
             len = numberOfKeys;
         }).catch(function(err) {
@@ -146,6 +145,7 @@ let displayPage = (url) => {
                 if(url === todoUrl) {
                     let textAutoSize = document.querySelector('textarea');
                     let addTaskBtn = document.getElementById('add-task-btn');
+                    console.log(addTaskBtn);
                     // console.log(textAutoSize);
                     // // console.log(autosize);
                     textAutoSize.addEventListener('keydown', autosize);
@@ -188,7 +188,7 @@ let displayPage = (url) => {
 let addTask = () => {
     text = taskTextarea[0].value;
     links = [];
-
+    console.log("addTask");
     //// Dodanie poprawnego zadania do bazy ////
     isText = text.replace(/\s/g, "").length;      // Sprawdzenie czy tekst nie jest pusty
     if(isText) {
