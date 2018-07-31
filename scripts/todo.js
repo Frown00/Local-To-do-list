@@ -48,9 +48,9 @@ let taskStore = localforage.createInstance({
 
 
 //// URL do podstron/zakladek ////
-let todoUrl = "https://frown00.github.io/local-to-do-list/todo.html";
-let doingUrl = "https://frown00.github.io/local-to-do-list/doing.html";
-let doneUrl = "https://frown00.github.io/local-to-do-list/done.html";
+let todoUrl = "http://localhost/local-todo-list/todo.html";
+let doingUrl = "http://localhost/local-todo-list/doing.html";
+let doneUrl = "http://localhost/local-todo-list/done.html";
 
 
 //// HANDLARY ////
@@ -84,6 +84,7 @@ doingBtn.addEventListener("click", () => {
 doneBtn.addEventListener("click", () => {
     displayPage(doneUrl);
 });
+
 
 
 
@@ -139,11 +140,17 @@ let displayPage = (url) => {
                 listOfAllTasks = arrTask;
                 listOfAllTasks.map((task) => task.idTask = parseInt(task.idTask));
                 listOfAllTasks = _.sortBy(listOfAllTasks, 'idTask');
-
-
+                
+                
                 // W zaleznosci od wybranego url dostosowuje wyswietlane zadania
                 if(url === todoUrl) {
-
+                    let textAutoSize = document.querySelector('textarea');
+                    let addTaskBtn = document.getElementById('add-task-btn');
+                    // console.log(textAutoSize);
+                    // // console.log(autosize);
+                    textAutoSize.addEventListener('keydown', autosize);
+                    addTaskBtn.addEventListener('click', addTask);
+                    
                     lastTask = _.last(listOfAllTasks);
                     currentId = parseInt(lastTask.idTask) + 1;                                          // Inkrementacja id od ostatniego zapisanego zadania
                     listOfAllTasks = _.filter(listOfAllTasks, (task) => task.state === "todo");
@@ -185,7 +192,7 @@ let addTask = () => {
     //// Dodanie poprawnego zadania do bazy ////
     isText = text.replace(/\s/g, "").length;      // Sprawdzenie czy tekst nie jest pusty
     if(isText) {
-
+        
 
         let urlRegex = /(https?:\/\/[\S]+)/g;          // Regex do rozpoznawania url (https, http)
         text = text.replace(urlRegex, function(url) {   // Usuniecie z tekstu linkow i dodanie ich do tablicy
@@ -211,6 +218,9 @@ let addTask = () => {
     }
     taskTextarea[0].focus();
     taskTextarea[0].value = "";     // Wyczyszczenie pola tekstowego
+
+    taskTextarea[0].style.height = '2em';
+    
 }
 
 
@@ -242,9 +252,14 @@ let appendTask = (task = []) => {
 
     //// Ustawainie atrybutow ////
     doingIcon.setAttribute("class", "setting-icon icon-flag");
-    removeIcon.setAttribute("class", "setting-icon icon-trash");
-    editIcon.setAttribute("class", "setting-icon icon-pencil-squared");
     doneIcon.setAttribute("class", "setting-icon icon-ok-circled");
+    editIcon.setAttribute("class", "setting-icon icon-pencil-squared");
+    removeIcon.setAttribute("class", "setting-icon icon-trash");    
+
+    doingIcon.setAttribute("title", "In progress");
+    doneIcon.setAttribute("title", "Have done");
+    editIcon.setAttribute("title", "Edit task");
+    removeIcon.setAttribute("title", "Remove task");
 
     taskLi.setAttribute("class", "task-container");
     taskLi.setAttribute("data-task", task.idTask);
@@ -262,7 +277,7 @@ let appendTask = (task = []) => {
     if(task.links.length > 0) {
         links.innerHTML = `<h4 class="links-title"> Links: </h4>`;
         for(let i = 0; i < task.links.length; i++) {
-            let linksLi = document.createElement("li");
+            const linksLi = document.createElement("li");
             linksLi.innerHTML = `<a href="${task.links[i]}">${task.links[i]}</a>`;
             linksUl.appendChild(linksLi);
         }
@@ -288,11 +303,11 @@ let appendTask = (task = []) => {
     taskLi.appendChild(iconsDiv);
 
     listTaskUl[0].appendChild(taskLi);
-
+    
     // Edytowanie usuwanie
     editBtn[appendTaskId].addEventListener("click", editTask);
     removeBtn[appendTaskId].addEventListener("click", removeTask);
-
+    
     // Zmiana stanu zadania
     inProgressBtn[appendTaskId].addEventListener("click", () => {
         changeState("in progress");
@@ -301,7 +316,7 @@ let appendTask = (task = []) => {
         changeState("have done");
     });
     appendTaskId += 1;
-
+ 
 }
 
 let editTask = (e) => {
@@ -309,15 +324,14 @@ let editTask = (e) => {
     //const parentTask = task.parentElement;              // taskUl
     //const taskId = task.dataset.task;                   // id
     const taskDiv = task.firstChild;
-
+    
     let editText;
     let editLinks;
-
-
+    
     let taskDivFirst = taskDiv.firstChild;
     let elementNum = 0;
     while (taskDivFirst) {
-
+        
         if(elementNum === 0) {
             editText = taskDivFirst;
         } else if(elementNum === 1) {
@@ -325,7 +339,7 @@ let editTask = (e) => {
         }
         taskDiv.removeChild(taskDivFirst);
         taskDivFirst = taskDiv.firstChild;
-
+        
         elementNum++;
     }
 
@@ -336,10 +350,10 @@ let editTask = (e) => {
     console.log(editText.innerHTML);
     editText.innerHTML = editText.innerHTML.replace("\r\n", "<br>/");
     editText.innerHTML = editText.innerHTML.replace("&nbsp;", " ");
-
+    
     console.log(editText.innerHTML);
     editTextarea.innerHTML = editText.innerHTML + "\r\n";
-
+    
 
     if(editLinks !== undefined) {
         const linksInTask = editLinks.getElementsByTagName("a");
@@ -348,17 +362,16 @@ let editTask = (e) => {
             arrayOfLinks.unshift(linksInTask[i].getAttribute("href"));
         }
         console.log(arrayOfLinks);
-
+        
         for(let i = 0; i < arrayOfLinks.length; i++) {
             editTextarea.innerHTML += arrayOfLinks[i] + "\r\n";
         }
     }
+    
 
-
-    console.log(editTextarea);
     taskDiv.appendChild(editTextarea);
-
-
+    
+    
 }
 
 
@@ -390,8 +403,8 @@ let removeTask = (e) => {
     }).catch(function(err) {
         console.log(err);
     });
-
-
+    
+    
 }
 
 //// Zmiana stanu wybranego zadania ////
@@ -405,7 +418,7 @@ let changeState = (targetState) => {
 
     let taskCopy;                                           // Kopia obiektu z bazy potrzebna do przeniesienia (IndexedDB nie umozliwia zmian wartosci w krotkach)
 
-    taskStore.getItem(taskId).then(function(t) {
+    taskStore.getItem(taskId).then((t) => {
         taskCopy = Object.assign({}, t);
         if(taskCopy.state === "todo") {
             numTodo--;
@@ -414,11 +427,13 @@ let changeState = (targetState) => {
             else if(targetState === "have done")
                 numHaveDone++;
         } else if(taskCopy.state === "in progress") {
+            numInProgress--;
             if(targetState === "todo")
                 numTodo++;
             else if(targetState === "have done")
                 numHaveDone++;
         } else if(taskCopy.state === "have done") {
+            numHaveDone--;
             if(targetState === "todo")
                 numTodo++;
             else if(targetState === "in progress")
@@ -428,30 +443,30 @@ let changeState = (targetState) => {
         updateTaskNumbers();
 
         taskCopy.state = targetState;
-    }).then(function(t) {
+    }).then((t) => {
         taskStore.removeItem(taskId).then(function() {
             parentTask.removeChild(task);
             appendTaskId -= 1;
         }).catch(function(err){
             console.log(err);
         });
-    }).then(function(task){
+    }).then((task) => {
         taskStore.setItem(taskCopy.idTask, taskCopy).then(function() {
 
-        }).catch(function(err){
+        }).catch((err) => {
             console.log(err);
         });
-    }).catch(function(err) {
+    }).catch((err) => {
         console.log(err);
     });
 
-
-
+    
+    
 }
 
 //// Uruchamiane tylko przy zaladowaniu strony
 let countTask = () => {
-
+    
     taskStore.iterate((task, key, iterationNumber) => {
         let state = task.state;
         if(state === "todo") {
@@ -475,6 +490,16 @@ let updateTaskNumbers = () => {
     haveDoneNumber.textContent = numHaveDone;
 }
 
+
+let autosize = () => {
+    let el = document.querySelector('textarea');
+    
+    setTimeout(function(){
+      el.style.cssText = 'height:auto; padding:0';
+      el.style.cssText = 'height:' + el.scrollHeight + 'px';
+    },0);
+}
+
 ////////////////////////////////////////////////////////
 
 
@@ -487,12 +512,17 @@ let updateTaskNumbers = () => {
         {
             localStorage['firstLoad'] = true;
             window.location.reload();
-        }
+        }  
         else
             localStorage.removeItem('firstLoad');
     }
-
+    
     countTask();
     displayPage(todoUrl);
-
+    //
 })();
+
+// Po zaladowaniu wylaczenie maski
+window.onload = function() {
+    document.getElementById("loading-mask").style.display = "none";
+}

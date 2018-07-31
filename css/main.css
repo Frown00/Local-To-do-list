@@ -46,6 +46,12 @@ nav button {
 nav button:focus {
     outline: 0;
     box-shadow: 0 0 3pt 2pt blue;
+    background-color: beige;
+    z-index: 2;
+}
+
+nav button:active {
+    background-color: green;
 }
 
 
@@ -55,12 +61,11 @@ main {
     background-color: rgba(255, 255, 255);    
     margin-bottom: 30px;
     border-radius: 0 0 10px 10px;
-    box-shadow: 2pt 5pt 10pt 0.1pt black;
-    
+    box-shadow: 2pt 5pt 10pt 0.1pt black;   
 }
 
 p {
-    word-break: break-all;
+    overflow-wrap: break-word;
 }
 
 main ul.list-of-tasks {
@@ -90,21 +95,32 @@ p.links {
 
 #add-task-section {
     display:flex;
-    align-items: center;
+    flex-wrap: wrap;
     justify-content: center;
-    height: 100px;
     margin-top: 50px;
     margin-left: 20px;
     margin-right: 20px;
-    padding: 20px;   
 }
 
 
 .task-textarea {
-    margin-right: 20px;
-    font-size: 25px;
+    display: block;
+    overflow: hidden;
+    /* demo only: */
+    padding: 10px;
     flex-grow: 1;
+    min-height: 1em;
+    height: 2em;
+    align-self: center;
+    flex-basis: 500px;
+    margin: 0 30px 0 5px;
     resize: none;
+    border-radius:10px;
+    border:6px solid #556677;
+}
+
+.task-textarea:focus {
+    outline: 0;
 }
 
 .edit-task-textarea {
@@ -117,18 +133,17 @@ p.links {
 }
 
 .round-button {
-    display:block;
+    display: block;
     height: 90px;
     width: 90px;
     border-radius: 50%;
     border: 0;
-    
-  }
+}
 
 .number-circle {
     display: inline-block;
     border-radius: 50%;
-    padding: 8px;
+    padding: 0.7em 1em;
     font-size: 0.7em;
     color: white;
     background: rgba(255, 51, 0, 0.6);
@@ -139,7 +154,7 @@ p.links {
 .round-button:focus {
     outline: 0;
     box-shadow: 0 0 3pt 2pt blue;
-  }
+}
 
 button:focus {
     
@@ -148,18 +163,18 @@ button:focus {
 .task {
     width: 70%;
     padding: 10px;
-    word-break: break-all;
 }
 
 .task-text {
-    
+    text-align: justify;
+    text-justify: inter-word;
 }
 
 .icons-container {
     display: flex;
     align-items: flex-start;
     justify-content: flex-end;
-          
+    margin-top: 20px;
 }
 
 .setting-icon {
@@ -200,8 +215,19 @@ button:focus {
 }
 
 
+#loading-mask {
+    background-color: white;
+    height: 100%;
+    left: 0;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 9999;
+}
+
+
 /* Smartphones (portrait and landscape) and small devices ----------- */
-@media only screen and (min-device-width : 120px) and (max-device-width :768px) {
+@media only screen and (min-width : 120px) and (max-width :768px) {
     /* Styles */
     nav {
         width: 100%;
@@ -213,7 +239,7 @@ button:focus {
 
     .icons-container {
         flex-direction: column;
-        
+        justify-content: flex-start;
     }
 
     .task {
@@ -234,20 +260,33 @@ button:focus {
 
 
     #add-task-section {
-        display:flex;
         align-items: center;
         justify-content: center;
-        height: 100px;
         margin-top: 50px;
         margin-left: 5px;
         margin-right: 5px;
         padding: 0px;
    
     }
+
+    .task-textarea {
+        margin-right: 5px;
+        
+    }
+
+    .round-button {
+        display: block;
+        flex-grow: 1;
+        height: 50px;
+        border-radius: 10px;
+        margin: 0 5px 0 5px;
+        border: 0;
+    }
 }
 
+
 /* iPads (portrait and landscape) ----------- */
-@media only screen and (min-device-width : 768px) and (max-device-width : 1024px) {
+@media only screen and (min-width : 768px) and (max-width : 1024px) {
     /* Styles */
     nav {
         width: 100%;

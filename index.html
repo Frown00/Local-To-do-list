@@ -13,6 +13,7 @@
         
     </head>
     <body>
+        <div id="loading-mask"></div>
         <header>
             <div id="page-title">
                 <h1>List of tasks</h1>
@@ -24,9 +25,9 @@
         <nav>
             <div id="time-buttons">
                 
-                <button class="todo" id="todo">Tasks to do &nbsp;<span id="number-todo" class="number-circle">0</span></button>
-                <button class="doing" id="doing">In progress  &nbsp;<span id="number-inprogress" class="number-circle">0</span></button>   
-                <button class="done" id="done">Have done  &nbsp;<span id="number-havedone" class="number-circle">0</span></button>
+                <button title="Show tasks to do" class="todo" id="todo">Tasks to do &nbsp;<span id="number-todo" class="number-circle">1000</span></button>
+                <button title="Show tasks in progress" class="doing" id="doing">In progress  &nbsp;<span id="number-inprogress" class="number-circle"></span></button>   
+                <button title="Show tasks have done" class="done" id="done">Have done  &nbsp;<span id="number-havedone" class="number-circle"></span></button>
                 
             </div>
         </nav>
