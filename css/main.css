@@ -106,7 +106,6 @@ p.links {
 .task-textarea {
     display: block;
     overflow: hidden;
-    /* demo only: */
     padding: 10px;
     flex-grow: 1;
     min-height: 1em;
@@ -134,8 +133,9 @@ p.links {
 
 .round-button {
     display: block;
-    height: 90px;
-    width: 90px;
+    align-self: center;
+    height: 65px;
+    width: 65px;
     border-radius: 50%;
     border: 0;
 }
