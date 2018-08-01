@@ -48,9 +48,9 @@ let taskStore = localforage.createInstance({
 
 
 //// URL do podstron/zakladek ////
-let todoUrl = "http://frown00.github.io/local-todo-list/todo.html";
-let doingUrl = "http://frown00.github.io/local-todo-list/doing.html";
-let doneUrl = "http://frown00.github.io/local-todo-list/done.html";
+let todoUrl = "https://frown00.github.io/local-todo-list/todo.html";
+let doingUrl = "https://frown00.github.io/local-todo-list/doing.html";
+let doneUrl = "https://frown00.github.io/local-todo-list/done.html";
 
 
 //// HANDLARY ////
@@ -75,15 +75,15 @@ let removeBtn = document.getElementsByClassName("icon-trash");
 todoBtn.addEventListener("click", () => {
     displayPage(todoUrl);
     appendAllTasks(listOfAllTasks);
-});
+}, true);
 
 doingBtn.addEventListener("click", () => {
     displayPage(doingUrl);
-});
+}, true);
 
 doneBtn.addEventListener("click", () => {
     displayPage(doneUrl);
-});
+}, true);
 
 
 
@@ -119,6 +119,7 @@ let displayPage = (url) => {
         document.getElementById("main").innerHTML = response
         let arr = [];
         let len = 0;
+        let addTaskBtn = document.getElementById("add-task-btn");
         taskStore.length().then(function(numberOfKeys){
             len = numberOfKeys;
         }).catch(function(err) {
@@ -145,11 +146,10 @@ let displayPage = (url) => {
                 if(url === todoUrl) {
                     let textAutoSize = document.querySelector('textarea');
                     let addTaskBtn = document.getElementById('add-task-btn');
-                    console.log(addTaskBtn);
                     // console.log(textAutoSize);
                     // // console.log(autosize);
-                    textAutoSize.addEventListener('keydown', autosize);
-                    addTaskBtn.addEventListener('click', addTask);
+                    textAutoSize.addEventListener('keydown', autosize, true);
+                    addTaskBtn.addEventListener('click', addTask, true);
 
                     lastTask = _.last(listOfAllTasks);
                     currentId = parseInt(lastTask.idTask) + 1;                                          // Inkrementacja id od ostatniego zapisanego zadania
@@ -188,7 +188,7 @@ let displayPage = (url) => {
 let addTask = () => {
     text = taskTextarea[0].value;
     links = [];
-    console.log("addTask");
+
     //// Dodanie poprawnego zadania do bazy ////
     isText = text.replace(/\s/g, "").length;      // Sprawdzenie czy tekst nie jest pusty
     if(isText) {
@@ -309,11 +309,11 @@ let appendTask = (task = []) => {
     removeBtn[appendTaskId].addEventListener("click", removeTask);
 
     // Zmiana stanu zadania
-    inProgressBtn[appendTaskId].addEventListener("click", () => {
-        changeState("in progress");
+    inProgressBtn[appendTaskId].addEventListener("click", (e) => {
+        changeState(e, "in progress");
     });
-    haveDoneBtn[appendTaskId].addEventListener("click", () => {
-        changeState("have done");
+    haveDoneBtn[appendTaskId].addEventListener("click", (e) => {
+        changeState(e, "have done");
     });
     appendTaskId += 1;
 
@@ -411,7 +411,7 @@ let removeTask = (e) => {
 ////    state = todo -> todo
 ////    state = in progress -> doing
 ////    state = have done -> done
-let changeState = (targetState) => {
+let changeState = (event, targetState) => {
     const task = event.target.parentElement.parentElement;  // taskLi
     const parentTask = task.parentElement;                  // taskUl
     const taskId = task.dataset.task;                       // id
