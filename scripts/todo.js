@@ -48,9 +48,9 @@ let taskStore = localforage.createInstance({
 
 
 //// URL do podstron/zakladek ////
-let todoUrl = "http://localhost/local-todo-list/todo.html";
-let doingUrl = "http://localhost/local-todo-list/doing.html";
-let doneUrl = "http://localhost/local-todo-list/done.html";
+let todoUrl = "https://frown00.github.io/local-todo-list/todo.html";
+let doingUrl = "https://frown00.github.io/local-todo-list/doing.html";
+let doneUrl = "https://frown00.github.io/local-todo-list/done.html";
 
 
 //// HANDLARY ////
