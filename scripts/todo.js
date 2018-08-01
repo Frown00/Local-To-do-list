@@ -1,12 +1,12 @@
 // Okresla czas DD/NM/RRRR
 Date.prototype.today = function () {
-    return ((this.getDate() < 10)?"0":"") + this.getDate() +"/"+(((this.getMonth() + 1) < 10)?"0":"") + (this.getMonth()+1) +"/"+ this.getFullYear();
-}
+    return ((this.getDate() < 10) ? "0" : "") + this.getDate() + "/" + (((this.getMonth() + 1) < 10) ? "0" : "") + (this.getMonth()+1) +"/"+ this.getFullYear();
+};
 
 // Okresla czas HH:MM:SS
 Date.prototype.timeNow = function () {
-     return ((this.getHours() < 10)?"0":"") + this.getHours() +":"+ ((this.getMinutes() < 10)?"0":"") + this.getMinutes() +":"+ ((this.getSeconds() < 10)?"0":"") + this.getSeconds();
-}
+    return ((this.getHours() < 10)?"0":"") + this.getHours() +":"+ ((this.getMinutes() < 10)?"0":"") + this.getMinutes() +":"+ ((this.getSeconds() < 10)?"0":"") + this.getSeconds();
+};
 
 
 
@@ -144,12 +144,7 @@ let displayPage = (url) => {
 
                 // W zaleznosci od wybranego url dostosowuje wyswietlane zadania
                 if(url === todoUrl) {
-                    let textAutoSize = document.querySelector('textarea');
-                    let addTaskBtn = document.getElementById('add-task-btn');
-                    // console.log(textAutoSize);
-                    // // console.log(autosize);
-                    textAutoSize.addEventListener('keydown', autosize, true);
-                    addTaskBtn.addEventListener('click', addTask, true);
+                    
 
                     lastTask = _.last(listOfAllTasks);
                     currentId = parseInt(lastTask.idTask) + 1;                                          // Inkrementacja id od ostatniego zapisanego zadania

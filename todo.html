@@ -1,7 +1,7 @@
 <section id="add-task-section">
-    <textarea name="task-text" class="task-textarea" rows="2" placeholder="Enter here task and links separated by at least two space" ></textarea>
+    <textarea name="task-text" class="task-textarea" rows="2" placeholder="Enter here task and links separated by at least two space" onkeydown="autosize()"></textarea>
 
-    <button id="add-task-btn" class="round-button">
+    <button id="add-task-btn" class="round-button" onclick="addTask()">
             <span>&#43;</span>
     </button>
 
